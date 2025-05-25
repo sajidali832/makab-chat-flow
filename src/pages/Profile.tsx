@@ -1,18 +1,28 @@
 
-import { useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Layout from '@/components/Layout';
 import ProfilePage from '@/components/ProfilePage';
+import LoadingScreen from '@/components/LoadingScreen';
 
 const Profile = () => {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('makab-auth');
-    if (!isAuthenticated) {
+    if (!loading && !user) {
       navigate('/');
     }
-  }, [navigate]);
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (!user) {
+    return <LoadingScreen />;
+  }
 
   return (
     <Layout>

@@ -1,30 +1,20 @@
 
-import { useState, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MessageCircle, User } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    // Check if user is authenticated
-    const authStatus = localStorage.getItem('makab-auth');
-    setIsAuthenticated(!!authStatus);
-    
-    // Redirect to chat if authenticated and on login page
-    if (authStatus && location.pathname === '/') {
-      navigate('/chat');
-    }
-  }, [location.pathname, navigate]);
-
-  // Don't show layout for auth pages
-  if (!isAuthenticated && location.pathname === '/') {
+  // Don't show layout for non-authenticated users
+  if (!user) {
     return <>{children}</>;
   }
 
@@ -35,37 +25,37 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 px-4 py-2 shadow-lg">
         <div className="flex justify-around max-w-md mx-auto">
           <button
             onClick={() => navigate('/chat')}
-            className={`flex flex-col items-center py-2 px-4 rounded-lg transition-colors ${
+            className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all duration-200 ${
               location.pathname === '/chat'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-blue-600'
+                ? 'text-blue-600 bg-blue-50 scale-105'
+                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
             }`}
           >
             <MessageCircle size={24} />
-            <span className="text-xs mt-1">Chat</span>
+            <span className="text-xs mt-1 font-medium">Chat 💬</span>
           </button>
           
           <button
             onClick={() => navigate('/profile')}
-            className={`flex flex-col items-center py-2 px-4 rounded-lg transition-colors ${
+            className={`flex flex-col items-center py-2 px-4 rounded-lg transition-all duration-200 ${
               location.pathname === '/profile'
-                ? 'text-blue-600 bg-blue-50'
-                : 'text-gray-600 hover:text-blue-600'
+                ? 'text-blue-600 bg-blue-50 scale-105'
+                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
             }`}
           >
             <User size={24} />
-            <span className="text-xs mt-1">Profile</span>
+            <span className="text-xs mt-1 font-medium">Profile 👤</span>
           </button>
         </div>
       </nav>
       
       {/* Footer */}
-      <div className="text-center text-xs text-gray-400 py-2 bg-white border-t">
-        Makab — Built & Developed by Sajid
+      <div className="text-center text-xs text-gray-400 py-2 bg-white/80 backdrop-blur-sm border-t">
+        Makab — Built & Developed by Sajid with ❤️
       </div>
     </div>
   );

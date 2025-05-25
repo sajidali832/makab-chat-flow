@@ -1,11 +1,12 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Search, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Send, Search, Copy, ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Message {
   id: string;
@@ -19,8 +20,10 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -30,10 +33,72 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (user) {
+      loadChatHistory();
+    }
+  }, [user]);
+
+  const loadChatHistory = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('timestamp', { ascending: true })
+        .limit(12); // Load last 6 conversations (12 messages)
+
+      if (error) {
+        console.error('Error loading chat history:', error);
+      } else if (data) {
+        const historyMessages: Message[] = data.map(msg => ({
+          id: msg.id,
+          content: msg.content,
+          isUser: msg.is_user,
+          timestamp: new Date(msg.timestamp),
+          rating: msg.rating as 'up' | 'down' | null,
+        }));
+        setMessages(historyMessages);
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const saveMessage = async (content: string, isUser: boolean, rating?: string) => {
+    if (!user) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert({
+          user_id: user.id,
+          content,
+          is_user: isUser,
+          rating: rating || null,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error saving message:', error);
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.error('Error saving message:', error);
+      return null;
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: 'Copied to clipboard',
+      title: '📋 Copied to clipboard',
       duration: 2000,
     });
   };
@@ -53,13 +118,23 @@ const ChatPage = () => {
     setInputMessage('');
     setIsLoading(true);
 
+    // Save user message
+    await saveMessage(currentMessage, true);
+
     try {
       console.log('Sending message to AI:', { message: currentMessage, withSearch });
       
+      // Get recent context (last 6 messages for context)
+      const recentMessages = messages.slice(-6).map(msg => ({
+        role: msg.isUser ? 'user' : 'assistant',
+        content: msg.content
+      }));
+
       const { data, error } = await supabase.functions.invoke('ai-chat', {
         body: { 
           message: currentMessage,
-          withSearch 
+          withSearch,
+          context: recentMessages
         }
       });
 
@@ -76,12 +151,20 @@ const ChatPage = () => {
       };
       
       setMessages(prev => [...prev, aiResponse]);
+      
+      // Save AI response
+      await saveMessage(data.response, false);
+      
+      toast({
+        title: '🤖 Response received',
+        duration: 1000,
+      });
     } catch (error) {
       console.error('Error getting AI response:', error);
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'Sorry, I encountered an error while processing your request. Please try again.',
+        content: '😅 Sorry, I encountered an error while processing your request. Please try again!',
         isUser: false,
         timestamp: new Date(),
         rating: null,
@@ -90,7 +173,7 @@ const ChatPage = () => {
       setMessages(prev => [...prev, errorMessage]);
       
       toast({
-        title: 'Error',
+        title: '❌ Error',
         description: 'Failed to get AI response. Please try again.',
         variant: 'destructive',
       });
@@ -99,13 +182,106 @@ const ChatPage = () => {
     }
   };
 
-  const handleRating = (messageId: string, rating: 'up' | 'down') => {
+  const handleRegenerate = async (messageId: string) => {
+    const messageIndex = messages.findIndex(msg => msg.id === messageId);
+    if (messageIndex === -1 || messages[messageIndex].isUser) return;
+
+    // Find the user message that prompted this AI response
+    const userMessage = messages[messageIndex - 1];
+    if (!userMessage || !userMessage.isUser) return;
+
+    setIsLoading(true);
+
+    try {
+      const recentMessages = messages.slice(0, messageIndex - 1).slice(-6).map(msg => ({
+        role: msg.isUser ? 'user' : 'assistant',
+        content: msg.content
+      }));
+
+      const { data, error } = await supabase.functions.invoke('ai-chat', {
+        body: { 
+          message: userMessage.content,
+          withSearch: false,
+          context: recentMessages
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const newAiResponse: Message = {
+        ...messages[messageIndex],
+        content: data.response,
+        timestamp: new Date(),
+        rating: null,
+      };
+
+      const newMessages = [...messages];
+      newMessages[messageIndex] = newAiResponse;
+      setMessages(newMessages);
+
+      // Update in database
+      if (user) {
+        await supabase
+          .from('chat_messages')
+          .update({ content: data.response, rating: null })
+          .eq('id', messageId);
+      }
+
+      toast({
+        title: '🔄 Response regenerated',
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('Error regenerating response:', error);
+      toast({
+        title: '❌ Error',
+        description: 'Failed to regenerate response.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRating = async (messageId: string, rating: 'up' | 'down') => {
+    const newRating = messages.find(msg => msg.id === messageId)?.rating === rating ? null : rating;
+    
     setMessages(prev => prev.map(msg => 
       msg.id === messageId 
-        ? { ...msg, rating: msg.rating === rating ? null : rating }
+        ? { ...msg, rating: newRating }
         : msg
     ));
+
+    // Update in database
+    if (user) {
+      await supabase
+        .from('chat_messages')
+        .update({ rating: newRating })
+        .eq('id', messageId);
+    }
+
+    if (newRating) {
+      toast({
+        title: newRating === 'up' ? '👍 Feedback sent' : '👎 Feedback sent',
+        duration: 1500,
+      });
+    }
   };
+
+  if (loadingMessages) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <span className="text-white font-bold text-2xl">M</span>
+          </div>
+          <p className="text-gray-600">Loading your conversation...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
@@ -116,7 +292,7 @@ const ChatPage = () => {
             <span className="text-white font-bold text-sm">M</span>
           </div>
           <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Makab
+            Makab AI Chat 🤖
           </h1>
         </div>
       </header>
@@ -128,7 +304,7 @@ const ChatPage = () => {
             <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-white font-bold text-2xl">M</span>
             </div>
-            <p className="text-lg font-medium">Welcome to Makab!</p>
+            <p className="text-lg font-medium">Welcome to Makab! 👋</p>
             <p className="text-sm">Start a conversation with your AI assistant</p>
           </div>
         )}
@@ -136,9 +312,9 @@ const ChatPage = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}
           >
-            <Card className={`max-w-[85%] p-3 shadow-sm ${
+            <Card className={`max-w-[85%] p-3 shadow-sm transition-all duration-200 hover:shadow-md ${
               message.isUser 
                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
                 : 'bg-white border-gray-200'
@@ -153,7 +329,7 @@ const ChatPage = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => copyToClipboard(message.content)}
-                    className={`p-1 rounded hover:bg-opacity-20 hover:bg-gray-500 ${
+                    className={`p-1 rounded hover:bg-opacity-20 hover:bg-gray-500 transition-colors ${
                       message.isUser ? 'text-white' : 'text-gray-600'
                     }`}
                   >
@@ -163,8 +339,15 @@ const ChatPage = () => {
                   {!message.isUser && (
                     <>
                       <button
+                        onClick={() => handleRegenerate(message.id)}
+                        disabled={isLoading}
+                        className="p-1 rounded text-gray-400 hover:text-blue-600 transition-colors"
+                      >
+                        <RotateCcw size={14} />
+                      </button>
+                      <button
                         onClick={() => handleRating(message.id, 'up')}
-                        className={`p-1 rounded ${
+                        className={`p-1 rounded transition-colors ${
                           message.rating === 'up' 
                             ? 'text-green-600' 
                             : 'text-gray-400 hover:text-green-600'
@@ -174,7 +357,7 @@ const ChatPage = () => {
                       </button>
                       <button
                         onClick={() => handleRating(message.id, 'down')}
-                        className={`p-1 rounded ${
+                        className={`p-1 rounded transition-colors ${
                           message.rating === 'down' 
                             ? 'text-red-600' 
                             : 'text-gray-400 hover:text-red-600'
@@ -191,12 +374,15 @@ const ChatPage = () => {
         ))}
 
         {isLoading && (
-          <div className="flex justify-start">
+          <div className="flex justify-start animate-fade-in">
             <Card className="max-w-[85%] p-3 bg-white border-gray-200">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                <div className="text-sm text-gray-600">🤖 Makab is thinking</div>
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
               </div>
             </Card>
           </div>
@@ -212,9 +398,9 @@ const ChatPage = () => {
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder="Type your message... 💬"
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              className="pr-20"
+              className="pr-20 transition-all duration-200 focus:ring-2 focus:ring-blue-500"
               disabled={isLoading}
             />
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-1">
@@ -223,8 +409,8 @@ const ChatPage = () => {
                 variant="ghost"
                 onClick={() => handleSend(true)}
                 disabled={!inputMessage.trim() || isLoading}
-                className="p-1 h-8 w-8"
-                title="Search the web"
+                className="p-1 h-8 w-8 hover:bg-blue-50"
+                title="Search the web 🔍"
               >
                 <Search size={16} />
               </Button>

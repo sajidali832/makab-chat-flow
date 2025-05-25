@@ -1,9 +1,12 @@
 
-import { useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import AuthPage from '@/components/AuthPage';
+import LoadingScreen from '@/components/LoadingScreen';
 
 const Index = () => {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,12 +21,19 @@ const Index = () => {
         });
     }
 
-    // Check if user is already authenticated
-    const isAuthenticated = localStorage.getItem('makab-auth');
-    if (isAuthenticated) {
+    // Redirect authenticated users to chat
+    if (user && !loading) {
       navigate('/chat');
     }
-  }, [navigate]);
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (user) {
+    return <LoadingScreen />;
+  }
 
   return <AuthPage />;
 };

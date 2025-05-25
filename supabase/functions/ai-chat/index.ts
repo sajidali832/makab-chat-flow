@@ -16,15 +16,31 @@ serve(async (req) => {
   }
 
   try {
-    const { message, withSearch = false } = await req.json();
+    const { message, withSearch = false, context = [] } = await req.json();
     
-    console.log('Received chat request:', { message, withSearch });
+    console.log('Received chat request:', { message, withSearch, contextLength: context.length });
 
-    let systemPrompt = "You are Makab, a helpful AI assistant. Provide clear, concise, and helpful responses to user questions.";
+    let systemPrompt = `You are Makab, a helpful AI assistant created by Sajid. You provide clear, concise, and helpful responses to user questions. Always respond with appropriate emojis to make conversations engaging and friendly. You remember the context of previous messages in this conversation to provide better continuity.
+
+Key personality traits:
+- Friendly and helpful 😊
+- Use emojis naturally in responses 
+- Remember conversation context
+- Provide clear and concise answers
+- Be engaging and personable
+
+Remember: You are Makab, built by Sajid, and you should maintain a consistent personality throughout the conversation.`;
     
     if (withSearch) {
-      systemPrompt += " The user has requested a web search. Please indicate that you would search for relevant information and provide a comprehensive response based on general knowledge about the topic.";
+      systemPrompt += " The user has requested a web search. Please indicate that you would search for relevant information and provide a comprehensive response based on general knowledge about the topic, enhanced with web search context. 🔍";
     }
+
+    // Build conversation history
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...context,
+      { role: 'user', content: message }
+    ];
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -36,10 +52,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'meta-llama/llama-3.3-8b-instruct:free',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ],
+        messages: messages,
         temperature: 0.7,
         max_tokens: 1000,
       }),

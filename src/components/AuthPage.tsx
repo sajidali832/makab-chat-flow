@@ -1,100 +1,141 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { Eye, EyeOff } from 'lucide-react';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { signIn, signUp } = useAuth();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Mock authentication - in real app, this would call your auth API
-    localStorage.setItem('makab-auth', 'true');
-    localStorage.setItem('makab-user', JSON.stringify({
-      email,
-      name: isLogin ? 'User' : name,
-      id: Date.now().toString()
-    }));
-    
-    navigate('/chat');
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        await signIn(email, password);
+        toast({
+          title: '🎉 Welcome back!',
+          description: 'Successfully signed in to Makab',
+        });
+      } else {
+        await signUp(email, password, name);
+        toast({
+          title: '🚀 Account created!',
+          description: 'Welcome to Makab! You can now start chatting.',
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: '❌ Authentication Error',
+        description: error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-2xl border-0">
+      <Card className="w-full max-w-md shadow-2xl border-0 animate-fade-in">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
             <span className="text-white font-bold text-2xl">M</span>
           </div>
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Welcome to Makab
+            {isLogin ? 'Welcome Back! 👋' : 'Join Makab! 🚀'}
           </CardTitle>
           <p className="text-gray-600 text-sm">
-            Your intelligent AI chat assistant
+            {isLogin ? 'Sign in to continue your AI journey' : 'Create your account and start chatting'}
           </p>
         </CardHeader>
         
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
-              <div>
-                <label className="text-sm font-medium text-gray-700">Name</label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Full Name</label>
                 <Input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder="Enter your full name"
                   required
-                  className="mt-1"
+                  disabled={loading}
+                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             )}
             
-            <div>
-              <label className="text-sm font-medium text-gray-700">Email</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Email Address</label>
               <Input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 required
-                className="mt-1"
+                disabled={loading}
+                className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
               />
             </div>
             
-            <div>
+            <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-                className="mt-1"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                  disabled={loading}
+                  className="pr-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
             >
-              {isLogin ? 'Sign In' : 'Sign Up'}
+              {loading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{isLogin ? 'Signing In...' : 'Creating Account...'}</span>
+                </div>
+              ) : (
+                <span>{isLogin ? '🔑 Sign In' : '🚀 Create Account'}</span>
+              )}
             </Button>
           </form>
           
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-blue-600 hover:text-blue-700"
+              disabled={loading}
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
             >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+              {isLogin ? "Don't have an account? Create one! 📝" : "Already have an account? Sign in! 👋"}
             </button>
           </div>
         </CardContent>
