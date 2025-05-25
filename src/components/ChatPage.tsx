@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Message {
   id: string;
@@ -48,24 +49,54 @@ const ChatPage = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
-    // Mock AI response - replace with actual API call
-    setTimeout(() => {
+    try {
+      console.log('Sending message to AI:', { message: currentMessage, withSearch });
+      
+      const { data, error } = await supabase.functions.invoke('ai-chat', {
+        body: { 
+          message: currentMessage,
+          withSearch 
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: withSearch 
-          ? `I searched the web and found that: ${inputMessage}. Here's what I discovered...` 
-          : `I understand your question about: "${inputMessage}". Let me help you with that...`,
+        content: data.response,
         isUser: false,
         timestamp: new Date(),
         rating: null,
       };
       
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: 'Sorry, I encountered an error while processing your request. Please try again.',
+        isUser: false,
+        timestamp: new Date(),
+        rating: null,
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      
+      toast({
+        title: 'Error',
+        description: 'Failed to get AI response. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleRating = (messageId: string, rating: 'up' | 'down') => {
@@ -193,6 +224,7 @@ const ChatPage = () => {
                 onClick={() => handleSend(true)}
                 disabled={!inputMessage.trim() || isLoading}
                 className="p-1 h-8 w-8"
+                title="Search the web"
               >
                 <Search size={16} />
               </Button>
