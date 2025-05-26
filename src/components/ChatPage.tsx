@@ -32,6 +32,7 @@ const ChatPage = () => {
   }, [messages]);
 
   useEffect(() => {
+    // Load chat history but don't block the UI
     if (user) {
       loadChatHistory();
     }
