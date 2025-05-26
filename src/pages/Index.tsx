@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthPage from '@/components/AuthPage';
 
 const Index: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,17 +20,11 @@ const Index: React.FC = () => {
         });
     }
 
-    // Redirect authenticated users to chat immediately
-    if (user && !loading) {
+    // Redirect authenticated users to chat immediately - no loading check
+    if (user) {
       navigate('/chat');
     }
-  }, [user, loading, navigate]);
-
-  if (loading) {
-    return <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-orange-500 flex items-center justify-center">
-      <div className="text-white">Loading...</div>
-    </div>;
-  }
+  }, [user, navigate]);
 
   if (user) {
     return null; // Will redirect to chat

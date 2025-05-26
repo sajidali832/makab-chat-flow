@@ -31,40 +31,12 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    // Load chat history but don't block the UI
-    if (user) {
-      loadChatHistory();
-    }
-  }, [user]);
-
-  const loadChatHistory = async () => {
-    if (!user) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('timestamp', { ascending: true })
-        .limit(12);
-
-      if (error) {
-        console.error('Error loading chat history:', error);
-      } else if (data) {
-        const historyMessages: Message[] = data.map(msg => ({
-          id: msg.id,
-          content: msg.content,
-          isUser: msg.is_user,
-          timestamp: new Date(msg.timestamp),
-          rating: msg.rating as 'up' | 'down' | null,
-        }));
-        setMessages(historyMessages);
-      }
-    } catch (error) {
-      console.error('Error loading chat history:', error);
-    }
-  };
+  // Remove the loading chat history effect - just start fresh
+  // useEffect(() => {
+  //   if (user) {
+  //     loadChatHistory();
+  //   }
+  // }, [user]);
 
   const saveMessage = async (content: string, isUser: boolean, rating?: string) => {
     if (!user) return null;
@@ -267,7 +239,6 @@ const ChatPage = () => {
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-20">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              {/* Robot Icon */}
               <div className="relative">
                 <div className="w-6 h-4 bg-white rounded-t-lg"></div>
                 <div className="w-1.5 h-1.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
