@@ -1,35 +1,28 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import ProfilePage from '@/components/ProfilePage';
-import LoadingScreen from '@/components/LoadingScreen';
 
 const Profile: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/');
     }
-
-    // Force loading screen for 1.5 seconds
-    const timer = setTimeout(() => {
-      setShowLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
   }, [user, loading, navigate]);
 
-  if (loading || showLoading) {
-    return <LoadingScreen />;
+  if (loading) {
+    return <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="text-gray-600">Loading...</div>
+    </div>;
   }
 
   if (!user) {
-    return <LoadingScreen />;
+    return null; // Will redirect to home
   }
 
   return (
