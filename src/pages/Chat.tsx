@@ -1,12 +1,12 @@
 
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import Layout from '@/components/Layout';
 import ChatPage from '@/components/ChatPage';
 import LoadingScreen from '@/components/LoadingScreen';
 
-const Chat = () => {
+const Chat: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [showLoading, setShowLoading] = useState(true);

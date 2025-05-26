@@ -1,11 +1,11 @@
 
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import AuthPage from '@/components/AuthPage';
 import LoadingScreen from '@/components/LoadingScreen';
 
-const Index = () => {
+const Index: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [showLoading, setShowLoading] = useState(true);

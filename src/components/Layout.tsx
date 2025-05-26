@@ -1,5 +1,5 @@
 
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import TopNavigation from './TopNavigation';
 
@@ -7,7 +7,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user } = useAuth();
 
   // Don't show layout for non-authenticated users
