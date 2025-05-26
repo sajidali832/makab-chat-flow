@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Send, Search, Copy, ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,6 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessages, setLoadingMessages] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -64,8 +62,6 @@ const ChatPage = () => {
       }
     } catch (error) {
       console.error('Error loading chat history:', error);
-    } finally {
-      setLoadingMessages(false);
     }
   };
 
@@ -262,28 +258,6 @@ const ChatPage = () => {
       });
     }
   };
-
-  if (loadingMessages) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg">
-            {/* Robot Icon */}
-            <div className="relative">
-              <div className="w-6 h-4 bg-white rounded-t-lg"></div>
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
-              <div className="flex space-x-1 mt-0.5">
-                <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-              </div>
-              <div className="w-4 h-3 bg-white rounded-b-md mt-0.5"></div>
-            </div>
-          </div>
-          <p className="text-gray-600">Loading your conversation...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
