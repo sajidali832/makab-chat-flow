@@ -2,7 +2,7 @@
 {
   "name": "Makab - AI Chat Assistant",
   "short_name": "Makab",
-  "description": "Sleek AI chat assistant and alternative to ChatGPT",
+  "description": "Your intelligent AI chat assistant",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#667eea",
@@ -10,15 +10,15 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/placeholder.svg",
+      "src": "/lovable-uploads/89fe2baf-ad97-4ce6-ad6d-73829b1a622d.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/placeholder.svg",
+      "src": "/lovable-uploads/89fe2baf-ad97-4ce6-ad6d-73829b1a622d.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

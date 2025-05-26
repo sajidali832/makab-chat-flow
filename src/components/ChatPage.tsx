@@ -48,7 +48,7 @@ const ChatPage = () => {
         .select('*')
         .eq('user_id', user.id)
         .order('timestamp', { ascending: true })
-        .limit(12); // Load last 6 conversations (12 messages)
+        .limit(12);
 
       if (error) {
         console.error('Error loading chat history:', error);
@@ -118,13 +118,11 @@ const ChatPage = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    // Save user message
     await saveMessage(currentMessage, true);
 
     try {
       console.log('Sending message to AI:', { message: currentMessage, withSearch });
       
-      // Get recent context (last 6 messages for context)
       const recentMessages = messages.slice(-6).map(msg => ({
         role: msg.isUser ? 'user' : 'assistant',
         content: msg.content
@@ -151,8 +149,6 @@ const ChatPage = () => {
       };
       
       setMessages(prev => [...prev, aiResponse]);
-      
-      // Save AI response
       await saveMessage(data.response, false);
       
       toast({
@@ -186,7 +182,6 @@ const ChatPage = () => {
     const messageIndex = messages.findIndex(msg => msg.id === messageId);
     if (messageIndex === -1 || messages[messageIndex].isUser) return;
 
-    // Find the user message that prompted this AI response
     const userMessage = messages[messageIndex - 1];
     if (!userMessage || !userMessage.isUser) return;
 
@@ -221,7 +216,6 @@ const ChatPage = () => {
       newMessages[messageIndex] = newAiResponse;
       setMessages(newMessages);
 
-      // Update in database
       if (user) {
         await supabase
           .from('chat_messages')
@@ -254,7 +248,6 @@ const ChatPage = () => {
         : msg
     ));
 
-    // Update in database
     if (user) {
       await supabase
         .from('chat_messages')
@@ -274,8 +267,17 @@ const ChatPage = () => {
     return (
       <div className="h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <span className="text-white font-bold text-2xl">M</span>
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce shadow-lg">
+            {/* Robot Icon */}
+            <div className="relative">
+              <div className="w-6 h-4 bg-white rounded-t-lg"></div>
+              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
+              <div className="flex space-x-1 mt-0.5">
+                <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+              </div>
+              <div className="w-4 h-3 bg-white rounded-b-md mt-0.5"></div>
+            </div>
           </div>
           <p className="text-gray-600">Loading your conversation...</p>
         </div>
@@ -285,24 +287,21 @@ const ChatPage = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b px-4 py-3">
-        <div className="flex items-center justify-center">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
-            <span className="text-white font-bold text-sm">M</span>
-          </div>
-          <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Makab AI Chat 🤖
-          </h1>
-        </div>
-      </header>
-
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-20">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-2xl">M</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              {/* Robot Icon */}
+              <div className="relative">
+                <div className="w-6 h-4 bg-white rounded-t-lg"></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
+                <div className="flex space-x-1 mt-0.5">
+                  <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                  <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                </div>
+                <div className="w-4 h-3 bg-white rounded-b-md mt-0.5"></div>
+              </div>
             </div>
             <p className="text-lg font-medium">Welcome to Makab! 👋</p>
             <p className="text-sm">Start a conversation with your AI assistant</p>
@@ -316,7 +315,7 @@ const ChatPage = () => {
           >
             <Card className={`max-w-[85%] p-3 shadow-sm transition-all duration-200 hover:shadow-md ${
               message.isUser 
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
+                ? 'bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white' 
                 : 'bg-white border-gray-200'
             }`}>
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -418,7 +417,7 @@ const ChatPage = () => {
                 size="sm"
                 onClick={() => handleSend()}
                 disabled={!inputMessage.trim() || isLoading}
-                className="p-1 h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                className="p-1 h-8 w-8 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 hover:from-blue-600 hover:via-purple-700 hover:to-orange-600"
               >
                 <Send size={16} />
               </Button>

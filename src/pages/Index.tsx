@@ -1,13 +1,14 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AuthPage from '@/components/AuthPage';
 import LoadingScreen from '@/components/LoadingScreen';
 
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Register service worker for PWA
@@ -21,13 +22,22 @@ const Index = () => {
         });
     }
 
-    // Redirect authenticated users to chat
+    // Force loading screen to show for at least 2 seconds
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 2000);
+
+    // Redirect authenticated users to chat after loading
     if (user && !loading) {
-      navigate('/chat');
+      setTimeout(() => {
+        navigate('/chat');
+      }, 2000);
     }
+
+    return () => clearTimeout(timer);
   }, [user, loading, navigate]);
 
-  if (loading) {
+  if (loading || showLoading) {
     return <LoadingScreen />;
   }
 
