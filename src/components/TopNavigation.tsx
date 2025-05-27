@@ -37,18 +37,14 @@ const TopNavigation = () => {
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Logo and Brand */}
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-lg flex items-center justify-center animate-pulse">
-            <div className="relative">
-              <div className="w-3 h-2 bg-white rounded-t-sm"></div>
-              <div className="w-0.5 h-0.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
-              <div className="flex space-x-0.5 mt-0.5">
-                <div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div>
-                <div className="w-0.5 h-0.5 bg-blue-600 rounded-full"></div>
-              </div>
-              <div className="w-2 h-1 bg-white rounded-b-sm mt-0.5"></div>
-            </div>
+          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 transform">
+            <img 
+              src="/lovable-uploads/8ab16db6-78ac-46a4-aec4-551544deb7f0.png" 
+              alt="Makab Logo" 
+              className="w-full h-full object-cover animate-pulse hover:animate-none transition-all duration-500"
+            />
           </div>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent hover:from-purple-600 hover:via-orange-500 hover:to-pink-500 transition-all duration-500">
             Makab
           </h1>
         </div>
@@ -60,7 +56,7 @@ const TopNavigation = () => {
               onClick={startNewChat}
               variant="ghost"
               size="sm"
-              className="h-8 px-3 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white hover:from-blue-600 hover:via-purple-700 hover:to-orange-600"
+              className="h-8 px-3 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white hover:from-blue-600 hover:via-purple-700 hover:to-orange-600 hover:scale-105 transition-all duration-200"
             >
               <Plus size={16} className="mr-1" />
               New Chat
@@ -70,7 +66,7 @@ const TopNavigation = () => {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full p-0">
+                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full p-0 hover:scale-110 transition-transform duration-200">
                   <Menu size={18} />
                 </Button>
               </DropdownMenuTrigger>

@@ -47,11 +47,15 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-orange-800 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-2xl border-0 animate-fade-in">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
-            <span className="text-white font-bold text-2xl">M</span>
+          <div className="mx-auto w-20 h-20 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 transform">
+            <img 
+              src="/lovable-uploads/8ab16db6-78ac-46a4-aec4-551544deb7f0.png" 
+              alt="Makab Logo" 
+              className="w-full h-full object-cover animate-pulse hover:animate-bounce transition-all duration-700"
+            />
           </div>
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             {isLogin ? 'Welcome Back! 👋' : 'Join Makab! 🚀'}
@@ -73,7 +77,7 @@ const AuthPage = () => {
                   placeholder="Enter your full name"
                   required
                   disabled={loading}
-                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 hover:border-blue-300"
                 />
               </div>
             )}
@@ -87,7 +91,7 @@ const AuthPage = () => {
                 placeholder="Enter your email"
                 required
                 disabled={loading}
-                className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 hover:border-blue-300"
               />
             </div>
             
@@ -101,12 +105,12 @@ const AuthPage = () => {
                   placeholder="Enter your password"
                   required
                   disabled={loading}
-                  className="pr-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+                  className="pr-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500 hover:border-blue-300"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -116,7 +120,7 @@ const AuthPage = () => {
             <Button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
             >
               {loading ? (
                 <div className="flex items-center space-x-2">
@@ -133,7 +137,7 @@ const AuthPage = () => {
             <button
               onClick={() => setIsLogin(!isLogin)}
               disabled={loading}
-              className="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200"
+              className="text-sm text-blue-600 hover:text-blue-700 transition-colors duration-200 hover:underline"
             >
               {isLogin ? "Don't have an account? Create one! 📝" : "Already have an account? Sign in! 👋"}
             </button>

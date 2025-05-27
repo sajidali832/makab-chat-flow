@@ -272,16 +272,12 @@ const ChatPage = () => {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-20">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <div className="relative">
-                <div className="w-6 h-4 bg-white rounded-t-lg"></div>
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
-                <div className="flex space-x-1 mt-0.5">
-                  <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                  <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                </div>
-                <div className="w-4 h-3 bg-white rounded-b-md mt-0.5"></div>
-              </div>
+            <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center mx-auto mb-6 hover:shadow-3xl transition-all duration-500 hover:scale-110 transform">
+              <img 
+                src="/lovable-uploads/8ab16db6-78ac-46a4-aec4-551544deb7f0.png" 
+                alt="Makab Logo" 
+                className="w-full h-full object-cover animate-pulse hover:animate-bounce transition-all duration-700"
+              />
             </div>
             <p className="text-lg font-medium">Welcome to Makab! 👋</p>
             <p className="text-sm">Start a conversation with your AI assistant</p>
