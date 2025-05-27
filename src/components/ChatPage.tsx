@@ -267,13 +267,13 @@ const ChatPage = () => {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Messages - Fixed height with proper scrolling */}
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-20">
-            <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center mx-auto mb-6 hover:shadow-3xl transition-all duration-500 hover:scale-110 transform">
+            <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center mx-auto mb-6">
               <img 
-                src="/lovable-uploads/93a613a8-8444-44c0-bfe3-6116211b2cb8.png" 
+                src="/lovable-uploads/ba0d63f8-0e42-478d-a574-1033f6304bbd.png" 
                 alt="Makab Logo" 
                 className="w-full h-full object-cover"
               />
@@ -365,8 +365,8 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input - Fixed at bottom, no scrolling */}
-      <div className="bg-white border-t px-4 py-3 flex-shrink-0 sticky bottom-0">
+      {/* Input */}
+      <div className="bg-white border-t px-4 py-3 flex-shrink-0">
         <div className="flex items-center space-x-2 max-w-4xl mx-auto">
           <div className="flex-1 relative">
             <Input

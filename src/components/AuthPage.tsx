@@ -48,11 +48,11 @@ const AuthPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-orange-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-2xl border-0 animate-fade-in">
+      <Card className="w-full max-w-md shadow-2xl border-0">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 transform">
+          <div className="mx-auto w-20 h-20 rounded-2xl overflow-hidden shadow-2xl">
             <img 
-              src="/lovable-uploads/93a613a8-8444-44c0-bfe3-6116211b2cb8.png" 
+              src="/lovable-uploads/ba0d63f8-0e42-478d-a574-1033f6304bbd.png" 
               alt="Makab Logo" 
               className="w-full h-full object-cover"
             />

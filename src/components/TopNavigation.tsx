@@ -28,8 +28,11 @@ const TopNavigation = () => {
   };
 
   const startNewChat = () => {
-    // Clear chat state and stay on the same page to reset the chat
-    window.location.reload();
+    // Navigate to chat page and force a refresh to clear state
+    navigate('/chat', { replace: true });
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   return (
@@ -37,14 +40,14 @@ const TopNavigation = () => {
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Logo and Brand */}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 transform">
+          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
             <img 
-              src="/lovable-uploads/93a613a8-8444-44c0-bfe3-6116211b2cb8.png" 
+              src="/lovable-uploads/ba0d63f8-0e42-478d-a574-1033f6304bbd.png" 
               alt="Makab Logo" 
               className="w-full h-full object-cover"
             />
           </div>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent hover:from-purple-600 hover:via-orange-500 hover:to-pink-500 transition-all duration-500">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">
             Makab
           </h1>
         </div>
@@ -56,7 +59,7 @@ const TopNavigation = () => {
               onClick={startNewChat}
               variant="ghost"
               size="sm"
-              className="h-8 px-3 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white hover:from-blue-600 hover:via-purple-700 hover:to-orange-600 hover:scale-105 transition-all duration-200"
+              className="h-8 px-3 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white hover:from-blue-600 hover:via-purple-700 hover:to-orange-600"
             >
               <Plus size={16} className="mr-1" />
               New Chat
@@ -66,7 +69,7 @@ const TopNavigation = () => {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full p-0 hover:scale-110 transition-transform duration-200">
+                <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full p-0">
                   <Menu size={18} />
                 </Button>
               </DropdownMenuTrigger>
