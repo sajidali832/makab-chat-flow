@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Send, Search, Copy, ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -274,9 +273,9 @@ const ChatPage = () => {
           <div className="text-center text-gray-500 mt-20">
             <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center mx-auto mb-6 hover:shadow-3xl transition-all duration-500 hover:scale-110 transform">
               <img 
-                src="/lovable-uploads/8ab16db6-78ac-46a4-aec4-551544deb7f0.png" 
+                src="/lovable-uploads/93a613a8-8444-44c0-bfe3-6116211b2cb8.png" 
                 alt="Makab Logo" 
-                className="w-full h-full object-cover animate-pulse hover:animate-bounce transition-all duration-700"
+                className="w-full h-full object-cover"
               />
             </div>
             <p className="text-lg font-medium">Welcome to Makab! 👋</p>
@@ -367,7 +366,7 @@ const ChatPage = () => {
       </div>
 
       {/* Input - Fixed at bottom, no scrolling */}
-      <div className="bg-white border-t px-4 py-3 flex-shrink-0">
+      <div className="bg-white border-t px-4 py-3 flex-shrink-0 sticky bottom-0">
         <div className="flex items-center space-x-2 max-w-4xl mx-auto">
           <div className="flex-1 relative">
             <Input

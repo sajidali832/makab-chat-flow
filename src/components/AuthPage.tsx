@@ -52,9 +52,9 @@ const AuthPage = () => {
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-20 h-20 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-110 transform">
             <img 
-              src="/lovable-uploads/8ab16db6-78ac-46a4-aec4-551544deb7f0.png" 
+              src="/lovable-uploads/93a613a8-8444-44c0-bfe3-6116211b2cb8.png" 
               alt="Makab Logo" 
-              className="w-full h-full object-cover animate-pulse hover:animate-bounce transition-all duration-700"
+              className="w-full h-full object-cover"
             />
           </div>
           <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">

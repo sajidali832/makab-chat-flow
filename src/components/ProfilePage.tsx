@@ -196,38 +196,38 @@ const ProfilePage = () => {
         </div>
 
         {/* User Info */}
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center justify-between">
+        <Card className="shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+            <CardTitle className="text-lg flex items-center justify-between text-gray-800">
               User Information 📝
               {!isEditing && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsEditing(true)}
-                  className="text-blue-600 hover:text-blue-700"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-100"
                 >
                   <Edit size={16} />
                 </Button>
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-600">Name</label>
+          <CardContent className="space-y-6 p-6">
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <label className="text-sm font-semibold text-gray-700 block mb-2">Name</label>
               {isEditing ? (
-                <div className="flex items-center space-x-2 mt-1">
+                <div className="flex items-center space-x-2">
                   <Input
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     placeholder="Enter your name"
-                    className="flex-1"
+                    className="flex-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
                   <Button
                     size="sm"
                     onClick={handleUpdateProfile}
                     disabled={loading || !editName.trim()}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     <Save size={16} />
                   </Button>
@@ -238,25 +238,29 @@ const ProfilePage = () => {
                       setIsEditing(false);
                       setEditName(profile.name || '');
                     }}
+                    className="border-gray-300 hover:bg-gray-100"
                   >
                     <X size={16} />
                   </Button>
                 </div>
               ) : (
-                <p className="text-gray-900 font-medium mt-1">{profile.name || 'Not set'}</p>
+                <p className="text-gray-900 font-medium bg-white p-3 rounded border border-gray-200">{profile.name || 'Not set'}</p>
               )}
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Email</label>
-              <p className="text-gray-900 font-medium mt-1">{user.email}</p>
+            
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <label className="text-sm font-semibold text-gray-700 block mb-2">Email</label>
+              <p className="text-gray-900 font-medium bg-white p-3 rounded border border-gray-200">{user.email}</p>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">User ID</label>
-              <p className="text-gray-500 text-sm font-mono mt-1">{user.id}</p>
+            
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <label className="text-sm font-semibold text-gray-700 block mb-2">User ID</label>
+              <p className="text-gray-500 text-sm font-mono bg-white p-3 rounded border border-gray-200 break-all">{user.id}</p>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-600">Member Since</label>
-              <p className="text-gray-700 mt-1">
+            
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <label className="text-sm font-semibold text-gray-700 block mb-2">Member Since</label>
+              <p className="text-gray-700 bg-white p-3 rounded border border-gray-200">
                 {new Date(profile.created_at).toLocaleDateString()}
               </p>
             </div>
@@ -264,15 +268,15 @@ const ProfilePage = () => {
         </Card>
 
         {/* About Us */}
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardHeader>
-            <CardTitle className="text-lg">About Makab 🤖</CardTitle>
+        <Card className="shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+            <CardTitle className="text-lg text-gray-800">About Makab 🤖</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 leading-relaxed">
-              Makab is your intelligent AI chat assistant, powered by Llama 3.3 8B model 🚀. 
+          <CardContent className="p-6">
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Makab is your intelligent AI chat assistant, designed to provide comprehensive and helpful responses 🚀. 
               Built with cutting-edge technology, Makab offers both direct responses and 
-              web-search capabilities to give you the most comprehensive answers to your questions.
+              web-search capabilities to give you the most accurate answers to your questions.
               Every conversation is remembered to provide better context and continuity! 💬
             </p>
             <Separator className="my-4" />
@@ -283,23 +287,23 @@ const ProfilePage = () => {
         </Card>
 
         {/* Chat History */}
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center justify-between">
+        <Card className="shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+            <CardTitle className="text-lg flex items-center justify-between text-gray-800">
               Chat History 💬
               {history.length > 0 && (
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={clearAllHistory}
-                  className="text-xs"
+                  className="text-xs hover:bg-red-600"
                 >
                   Clear All
                 </Button>
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {history.length === 0 ? (
               <p className="text-gray-500 text-center py-8">No chat history yet 📭</p>
             ) : (
@@ -307,18 +311,18 @@ const ProfilePage = () => {
                 {history.map((message) => (
                   <div
                     key={message.id}
-                    className={`p-3 rounded-lg border transition-all duration-200 hover:shadow-sm ${
+                    className={`p-4 rounded-lg border transition-all duration-200 hover:shadow-sm ${
                       message.isUser 
-                        ? 'bg-blue-50 border-blue-200' 
-                        : 'bg-gray-50 border-gray-200'
+                        ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' 
+                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <p className="text-sm text-gray-900 line-clamp-2">
+                        <p className="text-sm text-gray-900 line-clamp-2 mb-2">
                           {message.content}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1 flex items-center space-x-2">
+                        <p className="text-xs text-gray-500 flex items-center space-x-2">
                           <span>{message.timestamp.toLocaleDateString()}</span>
                           <span>•</span>
                           <span>
@@ -326,16 +330,16 @@ const ProfilePage = () => {
                           </span>
                         </p>
                       </div>
-                      <div className="flex space-x-1 ml-2">
+                      <div className="flex space-x-1 ml-3">
                         <button
                           onClick={() => copyToClipboard(message.content)}
-                          className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                          className="p-2 text-gray-400 hover:text-gray-600 rounded transition-colors hover:bg-gray-200"
                         >
                           <Copy size={14} />
                         </button>
                         <button
                           onClick={() => deleteHistoryItem(message.id)}
-                          className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
+                          className="p-2 text-gray-400 hover:text-red-600 rounded transition-colors hover:bg-red-100"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -349,12 +353,12 @@ const ProfilePage = () => {
         </Card>
 
         {/* Logout */}
-        <Card className="shadow-sm hover:shadow-md transition-shadow duration-200">
+        <Card className="shadow-md hover:shadow-lg transition-shadow duration-200 border border-gray-200">
           <CardContent className="pt-6">
             <Button 
               onClick={handleLogout}
               variant="destructive"
-              className="w-full flex items-center justify-center space-x-2 hover:scale-105 transition-transform duration-200"
+              className="w-full flex items-center justify-center space-x-2 hover:scale-105 transition-transform duration-200 bg-red-600 hover:bg-red-700"
             >
               <LogOut size={18} />
               <span>Logout 👋</span>

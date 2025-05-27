@@ -28,8 +28,8 @@ const TopNavigation = () => {
   };
 
   const startNewChat = () => {
-    // Force a page reload to clear chat history
-    window.location.href = '/chat';
+    // Clear chat state and stay on the same page to reset the chat
+    window.location.reload();
   };
 
   return (
@@ -39,9 +39,9 @@ const TopNavigation = () => {
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 transform">
             <img 
-              src="/lovable-uploads/8ab16db6-78ac-46a4-aec4-551544deb7f0.png" 
+              src="/lovable-uploads/93a613a8-8444-44c0-bfe3-6116211b2cb8.png" 
               alt="Makab Logo" 
-              className="w-full h-full object-cover animate-pulse hover:animate-none transition-all duration-500"
+              className="w-full h-full object-cover"
             />
           </div>
           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent hover:from-purple-600 hover:via-orange-500 hover:to-pink-500 transition-all duration-500">
