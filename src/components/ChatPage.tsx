@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Send, Search, Copy, ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,12 +32,40 @@ const ChatPage = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Remove the loading chat history effect - just start fresh
-  // useEffect(() => {
-  //   if (user) {
-  //     loadChatHistory();
-  //   }
-  // }, [user]);
+  // Load chat history when component mounts
+  useEffect(() => {
+    if (user) {
+      loadChatHistory();
+    }
+  }, [user]);
+
+  const loadChatHistory = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('timestamp', { ascending: true })
+        .limit(20);
+
+      if (error) {
+        console.error('Error loading chat history:', error);
+      } else if (data) {
+        const historyMessages: Message[] = data.map(msg => ({
+          id: msg.id,
+          content: msg.content,
+          isUser: msg.is_user,
+          timestamp: new Date(msg.timestamp),
+          rating: msg.rating as 'up' | 'down' | null,
+        }));
+        setMessages(historyMessages);
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+    }
+  };
 
   const saveMessage = async (content: string, isUser: boolean, rating?: string) => {
     if (!user) return null;
@@ -232,10 +261,15 @@ const ChatPage = () => {
     }
   };
 
+  const startNewChat = () => {
+    setMessages([]);
+    setInputMessage('');
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      {/* Messages - Fixed height with proper scrolling */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-0">
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-20">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -336,8 +370,8 @@ const ChatPage = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="bg-white border-t px-4 py-3">
+      {/* Input - Fixed at bottom, no scrolling */}
+      <div className="bg-white border-t px-4 py-3 flex-shrink-0">
         <div className="flex items-center space-x-2 max-w-4xl mx-auto">
           <div className="flex-1 relative">
             <Input

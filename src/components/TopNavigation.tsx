@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Menu, X, MessageCircle, User, LogOut, Settings } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Menu, X, MessageCircle, User, LogOut, Settings, Plus } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +15,7 @@ import {
 const TopNavigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
@@ -26,13 +27,17 @@ const TopNavigation = () => {
     }
   };
 
+  const startNewChat = () => {
+    // Force a page reload to clear chat history
+    window.location.href = '/chat';
+  };
+
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 sticky top-0 z-50 shadow-sm">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Logo and Brand */}
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 rounded-lg flex items-center justify-center animate-pulse">
-            {/* Robot Icon */}
             <div className="relative">
               <div className="w-3 h-2 bg-white rounded-t-sm"></div>
               <div className="w-0.5 h-0.5 bg-blue-500 rounded-full absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-0.5"></div>
@@ -48,8 +53,20 @@ const TopNavigation = () => {
           </h1>
         </div>
 
-        {/* Right side - Menu */}
+        {/* Right side - New Chat Button and Menu */}
         <div className="flex items-center space-x-2">
+          {user && location.pathname === '/chat' && (
+            <Button
+              onClick={startNewChat}
+              variant="ghost"
+              size="sm"
+              className="h-8 px-3 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white hover:from-blue-600 hover:via-purple-700 hover:to-orange-600"
+            >
+              <Plus size={16} className="mr-1" />
+              New Chat
+            </Button>
+          )}
+          
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
