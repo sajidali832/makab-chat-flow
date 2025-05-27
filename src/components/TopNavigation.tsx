@@ -12,7 +12,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const TopNavigation = () => {
+interface TopNavigationProps {
+  onNewChat?: () => void;
+}
+
+const TopNavigation = ({ onNewChat }: TopNavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,12 +31,10 @@ const TopNavigation = () => {
     }
   };
 
-  const startNewChat = () => {
-    // Navigate to chat page and force a refresh to clear state
-    navigate('/chat', { replace: true });
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+  const handleNewChat = () => {
+    if (onNewChat) {
+      onNewChat();
+    }
   };
 
   return (
@@ -42,7 +44,7 @@ const TopNavigation = () => {
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
             <img 
-              src="/lovable-uploads/ba0d63f8-0e42-478d-a574-1033f6304bbd.png" 
+              src="/lovable-uploads/e134043d-a625-4cdd-ab9f-e4e2c2225aca.png" 
               alt="Makab Logo" 
               className="w-full h-full object-cover"
             />
@@ -56,7 +58,7 @@ const TopNavigation = () => {
         <div className="flex items-center space-x-2">
           {user && location.pathname === '/chat' && (
             <Button
-              onClick={startNewChat}
+              onClick={handleNewChat}
               variant="ghost"
               size="sm"
               className="h-8 px-3 bg-gradient-to-r from-blue-500 via-purple-600 to-orange-500 text-white hover:from-blue-600 hover:via-purple-700 hover:to-orange-600"

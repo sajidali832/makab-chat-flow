@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Send, Search, Copy, ThumbsUp, ThumbsDown, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import SmallLoadingScreen from './SmallLoadingScreen';
 
 interface Message {
   id: string;
@@ -19,6 +21,7 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isNewChatLoading, setIsNewChatLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -260,10 +263,24 @@ const ChatPage = () => {
     }
   };
 
-  const startNewChat = () => {
-    setMessages([]);
-    setInputMessage('');
+  const handleNewChat = () => {
+    setIsNewChatLoading(true);
+    setTimeout(() => {
+      setMessages([]);
+      setInputMessage('');
+      setIsNewChatLoading(false);
+    }, 800);
   };
+
+  if (isNewChatLoading) {
+    return (
+      <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="flex-1 flex items-center justify-center">
+          <SmallLoadingScreen />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
@@ -273,7 +290,7 @@ const ChatPage = () => {
           <div className="text-center text-gray-500 mt-20">
             <div className="w-24 h-24 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center mx-auto mb-6">
               <img 
-                src="/lovable-uploads/ba0d63f8-0e42-478d-a574-1033f6304bbd.png" 
+                src="/lovable-uploads/e134043d-a625-4cdd-ab9f-e4e2c2225aca.png" 
                 alt="Makab Logo" 
                 className="w-full h-full object-cover"
               />
